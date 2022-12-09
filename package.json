@@ -1,20 +1,20 @@
 {
-  "name": "impute",
-  "version": "0.0.1",
-  "description": "Impute missing values in data",
-  "main": "src/index.js",
+  "name": "randomforest",
+  "version": "1.0.0",
+  "description": "Implementation of Random Forests in JS and QMiner.",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon --watch . --ext js,csv --exec 'node example.js'"
+    "start": "tsc && node dist/example.js"
   },
-  "author": "Anton Zemlyansky",
-  "license": "MIT",
-  "dependencies": {
-    "random-forest": "0.0.6"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lyallm1/RandomForest.git"
   },
-  "devDependencies": {
-    "mkdata": "0.0.5",
-    "nodemon": "^2.0.3",
-    "typescript": "4.9.4"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lyallm1/RandomForest/issues"
+  },
+  "homepage": "https://github.com/Lyallm1/RandomForest#readme"
 }
