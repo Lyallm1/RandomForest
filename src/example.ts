@@ -1,18 +1,13 @@
-// const trainingData: [string, number, string][] = [['Green', 3, 'Apple'], ['Yellow', 3, 'Apple'], ['Red', 1, 'Grape'], ['Red', 1, 'Grape'], ['Yellow', 3, 'Lemon']],
-// header = ['colour', 'diameter', 'label']
+import { DecisionTree, RandomForest } from "./woodlands.js"
 
-// function uniqueVals(rows: [string, number, string][], col: number) {
-//     const unique = new Set<string | number>()
-//     for (const row of rows) unique.add(row[col])
-//     return unique
-// }
-// function classCounts(rows: [string, number, string][]) {
-//     const counts = {}
-//     for (const row of rows) {
-//         const label = row.slice()
-//     }
-//     return counts
-// }
-
-const lst = ['a', 'b', 'c', 'd', 'e']
-console.log(lst[-1])
+const trainingData = [
+    { a: 0, b: 0, output: 0 }, { a: 0, b: 1, output: 1 }, { a: 1, b: 0, output: 1 }, { a: 1, b: 1, output: 0 }
+], testingData = [{ a: 0, b: 0, output: 0 }, { a: 0, b: 1, output: 1 }], dt = new DecisionTree(trainingData, 'output', ['a', 'b'])
+console.log(`Single training accuracy: ${dt.evaluate(trainingData)}`)
+console.log(`Single test accuracy: ${dt.evaluate(testingData)}`)
+console.log(dt.predict({ a: 0, b: 1 }))
+const rf = new RandomForest(trainingData, 'output', ['a', 'b'], { numTrees: 100, percentData: 1, percentFeatures: 1 })
+console.log('Evaluating forest...')
+console.log(JSON.stringify(rf.evaluate(testingData), null, '\t'))
+console.log(rf.predictProbability({ a: 0, b: 1 }))
+console.log(rf.predictClass({ a: 0, b: 1 }))
