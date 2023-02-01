@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc src/example.ts && node dist/example.js"
+    "start": "tsc && node dist/example.js"
   },
   "repository": {
     "type": "git",
