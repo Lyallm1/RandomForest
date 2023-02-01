@@ -2,7 +2,7 @@
   "name": "randomforest",
   "version": "1.0.0",
   "description": "Implementation of Random Forests in JS and QMiner.",
-  "main": "index.js",
+  "main": "example.js",
   "type": "module",
   "scripts": {
     "start": "tsc && node dist/example.js"
