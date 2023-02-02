@@ -1,11 +1,11 @@
 {
   "name": "randomforest",
   "version": "1.0.0",
-  "description": "Implementation of Random Forests in JS and QMiner.",
-  "main": "example.js",
+  "description": "",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc && node dist/example.js"
+    "start": "tsc && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/Lyallm1/RandomForest#readme",
   "devDependencies": {
-    "@types/lodash": "4.14.191",
-    "@types/node": "18.11.18",
-    "typescript": "4.9.5"
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.11.18",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   }
 }
