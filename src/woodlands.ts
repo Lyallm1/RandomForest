@@ -17,11 +17,8 @@ function gain(_s: any[], target: string, feature: string) {
         return subset.length * entropy(map(subset, feature)) / _size(_s)
     }).reduce((a, b) => a + b, 0)
 }
-function maxGain(_s: any[], target: string, features: string[]) {
-    return maxBy(features, e => gain(_s, target, e))
-}
 function createTree(_s: any[], target: string, features: string[]): { type: 'result' | 'feature', val?: string, vals?: any[], name: string, alias: string } {
-    const targets = uniq(map(_s, target)), topTarget = mostCommon(targets), bestFeature = maxGain(_s, target, features), possibleValues = uniq(map(_s, bestFeature))
+    const targets = uniq(map(_s, target)), topTarget = mostCommon(targets), bestFeature = maxBy(features, e => gain(_s, target, e)), possibleValues = uniq(map(_s, bestFeature))
     if (targets.length == 1) return { type: 'result', val: targets[0], name: targets[0], alias: targets[0] + randomTag() }
     if (features.length == 0 || possibleValues.length == 0) return { type: 'result', val: topTarget, name: topTarget, alias: topTarget + randomTag() }
     return { name: bestFeature, alias: bestFeature + randomTag(), type: 'feature', vals: map(possibleValues, v => ({
