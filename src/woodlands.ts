@@ -1,23 +1,10 @@
 import _ from 'lodash'
 
-const { size: _size, each, filter, find, map, maxBy, shuffle, slice, sortBy, uniq, without } = _
-
-function randomTag() {
-    return `_r${Math.round(Math.random() * 1000000)}`
-}
-function mostCommon(l: any[]) {
-    return sortBy(l, a => filter(l, b => b == a).length).reverse()[0]
-}
-function entropy(vals: any[]) {
-    return uniq(vals).map(val => filter(vals, x => x == val).length / vals.length).map(p => -p * Math.log2(p)).reduce((a, b) => a + b, 0)
-}
-function gain(_s: any[], target: string, feature: string) {
-    return entropy(map(_s, target)) - uniq(map(_s, feature)).map(n => {
-        const subset = _s.filter(x => x[feature] == n)
-        return subset.length * entropy(map(subset, feature)) / _size(_s)
-    }).reduce((a, b) => a + b, 0)
-}
-function createTree(_s: any[], target: string, features: string[]): { type: 'result' | 'feature', val?: string, vals?: any[], name: string, alias: string } {
+const { size: _size, each, filter, find, map, maxBy, shuffle, slice, sortBy, uniq, without } = _, randomTag = () => `_r${Math.round(Math.random() * 1000000)}`, mostCommon  = (l: any[]) => sortBy(l, a => filter(l, b => b == a).length).reverse()[0], entropy = (vals: any[]) => uniq(vals).map(val => filter(vals, x => x == val).length / vals.length).map(p => -p * Math.log2(p)).reduce((a, b) => a + b, 0),
+gain = (_s: any[], target: string, feature: string) => entropy(map(_s, target)) - uniq(map(_s, feature)).map(n => {
+    const subset = _s.filter(x => x[feature] == n)
+    return subset.length * entropy(map(subset, feature)) / _size(_s)
+}).reduce((a, b) => a + b, 0), createTree = (_s: any[], target: string, features: string[]): { type: 'result' | 'feature', val?: string, vals?: any[], name: string, alias: string } => {
     const targets = uniq(map(_s, target)), topTarget = mostCommon(targets), bestFeature = maxBy(features, e => gain(_s, target, e)), possibleValues = uniq(map(_s, bestFeature))
     if (targets.length == 1) return { type: 'result', val: targets[0], name: targets[0], alias: targets[0] + randomTag() }
     if (features.length == 0 || possibleValues.length == 0) return { type: 'result', val: topTarget, name: topTarget, alias: topTarget + randomTag() }
@@ -27,36 +14,29 @@ function createTree(_s: any[], target: string, features: string[]): { type: 'res
 }
 
 export class DecisionTree {
-    data: { a: number, b: number, output: number }[]
-    model: { type: 'result' | 'feature', val?: string, vals?: any[], name: string, alias: string }
+    model = createTree(this.data, this.target, this.features)
     
-    constructor(_s: { a: number, b: number, output: number }[], public target: string, public features: string[]) {
-        this.data = _s
-        this.model = createTree(_s, target, features)
-    }
+    constructor(public data: { a: number, b: number, output: number }[], public target: string, public features: string[]) {}
 
     predict(sample: { a: number, b: number, output?: number }) {
-        let root = this.model
-        while (root.type != 'result') {
-            const childNode = find(root.vals, x => x.name == sample[root.name])
-            root = childNode ? childNode.child : root.vals[0].child
+        while (this.model.type != 'result') {
+            const childNode = find(this.model.vals, x => x.name == sample[this.model.name])
+            this.model = childNode ? childNode.child : this.model.vals[0].child
         }
-        return root.val
+        return this.model.val
     }
 
     evaluate(samples: { a: number, b: number, output?: number }[]) {
         let total = 0, correct = 0
         each(samples, s => {
             total++
-            if (this.predict(s) == s[this.target]) correct++
+            this.predict(s) == s[this.target] && correct++
         })
         return correct / total
     }
 
     featureImportance() {
-        const r: {[key: string]: number} = {}
-        for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
-        return r
+        return new Map(Array.from(this.features, feature => [feature, gain(this.data, this.target, feature)]))
     }
 
     toJSON() {
@@ -68,19 +48,17 @@ export class RandomForest {
     percentData: number
     percentFeatures: number
     verbose: boolean
-    data: { a: number, b: number, output: number }[]
     features: string[]
     trees: DecisionTree[] = []
 
-    constructor(_s: { a: number, b: number, output: number }[], public target: string, features: string[], opts: { numTrees: number, percentData: number, percentFeatures: number, verbose?: boolean }) {
+    constructor(public data: { a: number, b: number, output: number }[], public target: string, features: string[], opts: { numTrees: number, percentData: number, percentFeatures: number, verbose?: boolean }) {
         this.numTrees = opts.numTrees || 100
         this.percentData = opts.percentData || 0.2
         this.percentFeatures = opts.percentFeatures || 0.7
         this.verbose = opts.verbose || false
-        this.data = _s
         this.features = features.slice(0)
         for (let i = 0; i < this.numTrees; i++) {
-            let d = _s.slice(0)
+            let d = data.slice(0)
             d = slice(shuffle(d), 0, d.length * this.percentData)
             const f = slice(shuffle(features.slice(0)), 0, Math.round(features.length * this.percentFeatures))
             if (this.verbose) {
@@ -100,7 +78,7 @@ export class RandomForest {
     }
 
     predict(sample: { a: number, b: number, output?: number }, type: 'class' | 'probability') {
-        type = type || 'class'
+        type ||= 'class'
         const results = []
         each(this.trees, dt => results.push(dt.predict(sample)))
         if (type == 'class') return mostCommon(results)
@@ -113,7 +91,7 @@ export class RandomForest {
     }
 
     evaluate(samples: { a: number, b: number, output?: number }[]) {
-        const report = { size: 0, correct: 0, incorrect: 0, accuracy: 0, precision: 0, recall: 0, fscore: 0, class: {}, featureImportance: null }
+        const report = { size: 0, correct: 0, incorrect: 0, accuracy: 0, precision: 0, recall: 0, fscore: 0, class: {} as {[key: string]: {[key: string]: number}}, featureImportance: null }
         each(samples, s => {
             report.size++
             const pred = this.predictClass(s), actual = s[this.target]
@@ -128,9 +106,9 @@ export class RandomForest {
         })
         let classLength = 0
         each(report.class, d => {
-            (d['precision'] as number) = d['predictedCorrect'] / d['predicted'];
-            (d['recall'] as number) = d['predictedCorrect'] / d['size'];
-            (d['fscore'] as number) = 2 / (1  /d['precision'] + 1 / d['recall'])
+            d['precision'] = d['predictedCorrect'] / d['predicted'];
+            d['recall'] = d['predictedCorrect'] / d['size'];
+            d['fscore'] = 2 / (1 / d['precision'] + 1 / d['recall'])
             report.precision += d['precision']
             report.recall += d['recall']
             report.fscore += d['fscore']
@@ -145,8 +123,6 @@ export class RandomForest {
     }
 
     featureImportance() {
-        const r: {[key: string]: number} = {}
-        for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
-        return r
+        return new Map(Array.from(this.features, feature => [feature, gain(this.data, this.target, feature)]))
     }
 }
