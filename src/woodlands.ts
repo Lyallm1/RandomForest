@@ -94,9 +94,9 @@ export class RandomForest {
         each(samples, s => {
             report.size++
             const pred = this.predictClass(s), actual = s[this.target]
-            report.class[pred] = report.class[pred] || { size: 0, predicted: 0, predictedCorrect: 0 }
+            report.class[pred] ||= { size: 0, predicted: 0, predictedCorrect: 0 }
             report.class[pred].predicted++
-            report.class[actual] = report.class[actual] || { size: 0, predicted: 0, predictedCorrect: 0 }
+            report.class[actual] ||= { size: 0, predicted: 0, predictedCorrect: 0 }
             report.class[actual].size++
             if (pred == actual) {
                 report.correct++
@@ -105,12 +105,12 @@ export class RandomForest {
         })
         let classLength = 0
         each(report.class, d => {
-            d['precision'] = d['predictedCorrect'] / d['predicted'];
-            d['recall'] = d['predictedCorrect'] / d['size'];
-            d['fscore'] = 2 / (1 / d['precision'] + 1 / d['recall'])
-            report.precision += d['precision']
-            report.recall += d['recall']
-            report.fscore += d['fscore']
+            d.precision = d.predictedCorrect / d.predicted
+            d.recall = d.predictedCorrect / d.size
+            d.fscore = 2 / (1 / d.precision + 1 / d.recall)
+            report.precision += d.precision
+            report.recall += d.recall
+            report.fscore += d.fscore
             classLength++
         })
         report.accuracy = report.correct / report.size
