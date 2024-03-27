@@ -9,9 +9,7 @@ gain = (_s: any[], target: string, feature: string) => entropy(map(_s, target)) 
     const targets = uniq(map(_s, target)), topTarget = mostCommon(targets), bestFeature = maxBy(features, e => gain(_s, target, e)), possibleValues = uniq(map(_s, bestFeature))
     if (targets.length == 1) return { type: 'result', val: targets[0], name: targets[0], alias: targets[0] + randomTag() }
     if (features.length == 0 || possibleValues.length == 0) return { type: 'result', val: topTarget, name: topTarget, alias: topTarget + randomTag() }
-    return { name: bestFeature, alias: bestFeature + randomTag(), type: 'feature', vals: map(possibleValues, v => ({
-        name: v, alias: v + randomTag(), type: 'feature_value', child: createTree(_s.filter(x => x[bestFeature] == v), target, without(features, bestFeature))
-    })) }
+    return { name: bestFeature, alias: bestFeature + randomTag(), type: 'feature', vals: map(possibleValues, v => ({ name: v, alias: v + randomTag(), type: 'feature_value', child: createTree(_s.filter(x => x[bestFeature] == v), target, without(features, bestFeature)) })) }
 }
 
 export class DecisionTree {
