@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
-const { size: _size, each, filter, find, map, maxBy, shuffle, slice, sortBy, uniq, without } = _, randomTag = () => `_r${Math.round(Math.random() * 1000000)}`, mostCommon  = (l: any[]) => sortBy(l, a => filter(l, b => b == a).length).reverse()[0], entropy = (vals: any[]) => uniq(vals).map(val => filter(vals, x => x == val).length / vals.length).map(p => -p * Math.log2(p)).reduce((a, b) => a + b, 0),
+const { size: _size, each, filter, find, map, maxBy, shuffle, slice, sortBy, uniq, without } = _,
+randomTag = () => `_r${Math.round(Math.random() * 1000000)}`, mostCommon  = (l: any[]) => sortBy(l, a => filter(l, b => b == a).length).reverse()[0], entropy = (vals: any[]) => uniq(vals).map(val => filter(vals, x => x == val).length / vals.length).map(p => -p * Math.log2(p)).reduce((a, b) => a + b, 0),
 gain = (_s: any[], target: string, feature: string) => entropy(map(_s, target)) - uniq(map(_s, feature)).map(n => {
     const subset = _s.filter(x => x[feature] == n)
     return subset.length * entropy(map(subset, feature)) / _size(_s)
