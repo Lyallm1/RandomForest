@@ -90,7 +90,7 @@ export class RandomForest {
     }
 
     evaluate(samples: { a: number, b: number, output?: number }[]) {
-        const report = { size: 0, correct: 0, incorrect: 0, accuracy: 0, precision: 0, recall: 0, fscore: 0, class: {} as {[key: string]: {[key: string]: number}}, featureImportance: null }
+        const report = { size: 0, correct: 0, incorrect: 0, accuracy: 0, precision: 0, recall: 0, fscore: 0, class: {} as {[key: string]: {[key: string]: number}}, featureImportance: this.featureImportance() }
         each(samples, s => {
             report.size++
             const pred = this.predictClass(s), actual = s[this.target]
@@ -117,7 +117,6 @@ export class RandomForest {
         report.precision /= classLength
         report.recall /= classLength
         report.fscore /= classLength
-        report.featureImportance = this.featureImportance()
         return report
     }
 
