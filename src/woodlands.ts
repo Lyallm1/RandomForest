@@ -123,7 +123,7 @@ export class RandomForest {
     }
 
     featureImportance() {
-        const r = {}
+        const r: {[key: string]: number} = {}
         for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
         return r
     }
