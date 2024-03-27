@@ -36,7 +36,9 @@ export class DecisionTree {
     }
 
     featureImportance() {
-        return new Map(Array.from(this.features, feature => [feature, gain(this.data, this.target, feature)]))
+        const r = {}
+        for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
+        return r
     }
 
     toJSON() {
@@ -123,6 +125,8 @@ export class RandomForest {
     }
 
     featureImportance() {
-        return new Map(Array.from(this.features, feature => [feature, gain(this.data, this.target, feature)]))
+        const r = {}
+        for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
+        return r
     }
 }
