@@ -35,7 +35,7 @@ export class DecisionTree {
     }
 
     featureImportance() {
-        const r = {}
+        const r: {[key: string]: number} = {}
         for (const feature of this.features) r[feature] = gain(this.data, this.target, feature)
         return r
     }
@@ -49,10 +49,9 @@ export class RandomForest {
     percentData: number
     percentFeatures: number
     verbose: boolean
-    features: string[]
     trees: DecisionTree[] = []
 
-    constructor(public data: { a: number, b: number, output: number }[], public target: string, features: string[], opts: { numTrees: number, percentData: number, percentFeatures: number, verbose?: boolean }) {
+    constructor(public data: { a: number, b: number, output: number }[], public target: string, public features: string[], opts: { numTrees: number, percentData: number, percentFeatures: number, verbose?: boolean }) {
         this.numTrees = opts.numTrees || 100
         this.percentData = opts.percentData || 0.2
         this.percentFeatures = opts.percentFeatures || 0.7
