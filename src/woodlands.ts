@@ -79,8 +79,7 @@ export class RandomForest {
 
     predict(sample: { a: number, b: number, output?: number }, type: 'class' | 'probability') {
         type ||= 'class'
-        const results = []
-        each(this.trees, dt => results.push(dt.predict(sample)))
+        const results = Array.from(this.trees, dt => dt.predict(sample))
         if (type == 'class') return mostCommon(results)
         else {
             const counts: {[key: string]: number} = {}
